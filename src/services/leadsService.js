@@ -6,6 +6,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabaseClient'
  * @param {string} leadData.nombre - Nombre del lead
  * @param {string} leadData.email - Email del lead
  * @param {string} leadData.telefono - Teléfono del lead
+ * @param {string} leadData.fecha_cita - Fecha de la cita (YYYY-MM-DD)
+ * @param {string} leadData.hora_cita - Hora de la cita (HH:MM)
  * @param {Object} leadData.respuestas - Respuestas del quiz
  * @param {number} leadData.puntuacion - Puntuación total del quiz
  * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
@@ -27,6 +29,8 @@ export async function insertLead(leadData) {
           nombre: leadData.nombre,
           email: leadData.email,
           telefono: leadData.telefono,
+          fecha_cita: leadData.fecha_cita || null,
+          hora_cita: leadData.hora_cita || null,
           respuestas: leadData.respuestas,
           puntuacion: leadData.puntuacion,
           created_at: new Date().toISOString()
@@ -75,6 +79,8 @@ export async function fetchLeads() {
     const { data, error } = await supabase
       .from('leads')
       .select('*')
+      .order('fecha_cita', { ascending: true, nullsFirst: false })
+      .order('hora_cita', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
     if (error) {

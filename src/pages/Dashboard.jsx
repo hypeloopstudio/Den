@@ -37,6 +37,26 @@ function Dashboard() {
     }).format(date)
   }
 
+  const formatAppointmentDate = (dateString) => {
+    if (!dateString) return 'No agendada'
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date)
+  }
+
+  const formatTime = (timeString) => {
+    if (!timeString) return ''
+    const [hours, minutes] = timeString.split(':')
+    const hour = parseInt(hours)
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
+    return `${displayHour}:${minutes} ${ampm}`
+  }
+
   return (
     <div className="min-h-screen bg-background-dark">
       <div className="sticky top-0 z-50 flex items-center justify-between border-b border-white/10 bg-black/90 backdrop-blur-md px-6 md:px-10 py-4 shadow-lg">
@@ -94,19 +114,33 @@ function Dashboard() {
                 <table className="w-full">
                   <thead className="bg-black/40 border-b border-white/10">
                     <tr>
-                      <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Fecha</th>
+                      <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Cita Agendada</th>
                       <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Nombre</th>
                       <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Email</th>
                       <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Teléfono</th>
                       <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Puntuación</th>
+                      <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Registrado</th>
                       <th className="px-6 py-4 text-left text-white font-bold text-sm uppercase tracking-wider">Respuestas</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {leads.map((lead, index) => (
                       <tr key={lead.id || index} className="hover:bg-black/20 transition-colors">
-                        <td className="px-6 py-4 text-text-dim text-sm whitespace-nowrap">
-                          {formatDate(lead.created_at)}
+                        <td className="px-6 py-4">
+                          {lead.fecha_cita ? (
+                            <div className="flex flex-col gap-1">
+                              <span className="text-primary font-bold text-sm">
+                                {formatAppointmentDate(lead.fecha_cita)}
+                              </span>
+                              {lead.hora_cita && (
+                                <span className="text-text-dim text-xs">
+                                  {formatTime(lead.hora_cita)}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-text-dim text-sm italic">No agendada</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-white font-medium">
                           {lead.nombre || 'N/A'}
@@ -121,6 +155,9 @@ function Dashboard() {
                           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20 text-primary font-bold">
                             {lead.puntuacion || 0}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-text-dim text-sm whitespace-nowrap">
+                          {formatDate(lead.created_at)}
                         </td>
                         <td className="px-6 py-4">
                           <details className="cursor-pointer">

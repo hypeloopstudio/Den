@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import DatePicker from '../components/DatePicker'
+import TimePicker from '../components/TimePicker'
 import { insertLead } from '../services/leadsService'
 
 function Quiz() {
@@ -14,10 +16,15 @@ function Quiz() {
     nombre: '',
     email: '',
     telefono: '',
+    fecha_cita: '',
+    hora_cita: '',
     respuestas: {}
   })
 
   const [puntuacion, setPuntuacion] = useState(0)
+
+  // Total de pasos: 5 datos (nombre, email, teléfono, fecha, hora) + 5 preguntas = 10 pasos
+  const PERSONAL_DATA_STEPS = 5
 
   const questions = [
     {
@@ -77,8 +84,6 @@ function Quiz() {
     }
   ]
 
-  // Total de pasos: 3 datos personales + 5 preguntas = 8 pasos
-  const PERSONAL_DATA_STEPS = 3
   const TOTAL_STEPS = PERSONAL_DATA_STEPS + questions.length
 
   const handleInputChange = (e) => {
@@ -100,6 +105,14 @@ function Quiz() {
     }
     if (currentStep === 2 && !formData.telefono.trim()) {
       setError('Por favor ingresa tu teléfono')
+      return
+    }
+    if (currentStep === 3 && !formData.fecha_cita) {
+      setError('Por favor selecciona una fecha para tu cita')
+      return
+    }
+    if (currentStep === 4 && !formData.hora_cita) {
+      setError('Por favor selecciona una hora para tu cita')
       return
     }
     
@@ -230,6 +243,8 @@ function Quiz() {
                   {currentStep === 0 && '¿Cuál es tu nombre?'}
                   {currentStep === 1 && '¿Cuál es tu email?'}
                   {currentStep === 2 && '¿Cuál es tu teléfono?'}
+                  {currentStep === 3 && '¿Qué fecha prefieres para tu cita?'}
+                  {currentStep === 4 && '¿A qué hora prefieres tu cita?'}
                 </h2>
                 
                 {currentStep === 0 && (
@@ -277,6 +292,36 @@ function Quiz() {
                       placeholder="+1 234 567 8900"
                       autoFocus
                     />
+                  </div>
+                )}
+
+                {currentStep === 3 && (
+                  <div>
+                    <DatePicker
+                      value={formData.fecha_cita}
+                      onChange={(date) => {
+                        setFormData({ ...formData, fecha_cita: date })
+                        setError(null)
+                      }}
+                    />
+                    <p className="text-text-dim text-sm mt-3">
+                      Selecciona una fecha disponible para tu consulta
+                    </p>
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div>
+                    <TimePicker
+                      value={formData.hora_cita}
+                      onChange={(time) => {
+                        setFormData({ ...formData, hora_cita: time })
+                        setError(null)
+                      }}
+                    />
+                    <p className="text-text-dim text-sm mt-3">
+                      Horarios disponibles de 9:00 AM a 6:00 PM
+                    </p>
                   </div>
                 )}
 
