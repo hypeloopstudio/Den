@@ -21,8 +21,8 @@
 2. **Reemplaza los valores** con tus credenciales reales:
 
 ```env
-VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_SUPABASE_URL=https://zdcxktkbjxrtrysnpmen.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkY3hrdGtianhydHJ5c25wbWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MjMwNTEsImV4cCI6MjA4MzI5OTA1MX0.aq5XHTQ_P9ymX4cf4Y_YAMrqUXXHgqxNvj89h9Jeilc
 ```
 
 ### Ejemplo:

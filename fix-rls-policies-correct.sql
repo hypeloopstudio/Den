@@ -39,3 +39,4 @@ FROM pg_policies
 WHERE tablename = 'leads'
 ORDER BY policyname;
 
+

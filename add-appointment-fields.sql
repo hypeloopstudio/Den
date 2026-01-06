@@ -25,3 +25,4 @@ WHERE table_name = 'leads'
   AND column_name IN ('fecha_cita', 'hora_cita')
 ORDER BY column_name;
 
+

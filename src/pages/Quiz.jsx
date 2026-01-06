@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import DatePicker from '../components/DatePicker'
 import TimePicker from '../components/TimePicker'
+import CalComEmbed from '../components/CalComEmbed'
 import { insertLead } from '../services/leadsService'
 
 function Quiz() {
@@ -18,13 +19,19 @@ function Quiz() {
     telefono: '',
     fecha_cita: '',
     hora_cita: '',
+    cal_com_booking_id: '',
     respuestas: {}
   })
 
+  // Configuración de Cal.com (puedes mover esto a .env)
+  const CALCOM_LINK = import.meta.env.VITE_CALCOM_LINK || ''
+  const USE_CALCOM = CALCOM_LINK !== ''
+
   const [puntuacion, setPuntuacion] = useState(0)
 
-  // Total de pasos: 5 datos (nombre, email, teléfono, fecha, hora) + 5 preguntas = 10 pasos
-  const PERSONAL_DATA_STEPS = 5
+  // Total de pasos: Si usa Cal.com, son 4 datos (nombre, email, teléfono, fecha/hora juntos) + 5 preguntas = 9 pasos
+  // Si no usa Cal.com, son 5 datos (nombre, email, teléfono, fecha, hora) + 5 preguntas = 10 pasos
+  const PERSONAL_DATA_STEPS = USE_CALCOM ? 4 : 5
 
   const questions = [
     {
@@ -297,20 +304,54 @@ function Quiz() {
 
                 {currentStep === 3 && (
                   <div>
-                    <DatePicker
-                      value={formData.fecha_cita}
-                      onChange={(date) => {
-                        setFormData({ ...formData, fecha_cita: date })
-                        setError(null)
-                      }}
-                    />
-                    <p className="text-text-dim text-sm mt-3">
-                      Selecciona una fecha disponible para tu consulta
-                    </p>
+                    {USE_CALCOM ? (
+                      <div>
+                        <div className="bg-surface-dark rounded-xl p-4 mb-4" style={{ minHeight: '600px' }}>
+                          <CalComEmbed 
+                            calLink={CALCOM_LINK}
+                            onBookingComplete={(booking) => {
+                              const fecha = new Date(booking.startTime).toISOString().split('T')[0]
+                              const hora = new Date(booking.startTime).toTimeString().split(' ')[0].slice(0, 5)
+                              
+                              setFormData({
+                                ...formData,
+                                fecha_cita: fecha,
+                                hora_cita: hora,
+                                cal_com_booking_id: booking.id
+                              })
+                              
+                              setError(null)
+                              // Avanzar automáticamente después de seleccionar
+                              setTimeout(() => {
+                                if (currentStep < TOTAL_STEPS - 1) {
+                                  setCurrentStep(currentStep + 1)
+                                }
+                              }, 500)
+                            }}
+                          />
+                        </div>
+                        <p className="text-text-dim text-sm">
+                          Selecciona una fecha y hora disponible en el calendario de arriba
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <DatePicker
+                          value={formData.fecha_cita}
+                          onChange={(date) => {
+                            setFormData({ ...formData, fecha_cita: date })
+                            setError(null)
+                          }}
+                        />
+                        <p className="text-text-dim text-sm mt-3">
+                          Selecciona una fecha disponible para tu consulta
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 4 && !USE_CALCOM && (
                   <div>
                     <TimePicker
                       value={formData.hora_cita}

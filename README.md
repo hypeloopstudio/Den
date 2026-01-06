@@ -176,3 +176,4 @@ Este proyecto fue desarrollado para HypeLoop.
 
 **Desarrollado con ❤️ usando React, Vite y Supabase**
 
+
